@@ -1,5 +1,5 @@
 // Configuração do contato. Preencha o número com DDI + DDD, só dígitos (ex.: 5531999999999).
-const WHATSAPP = "";
+const WHATSAPP = "5516981702002";
 const MENSAGEM = "Olá, Paola! Vim pelo site e gostaria de informações sobre o atendimento.";
 
 document.documentElement.classList.add("js");

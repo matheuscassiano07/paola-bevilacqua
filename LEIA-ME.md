@@ -4,11 +4,10 @@ Site estático (HTML + CSS + JS, sem build). Para publicar, suba a pasta inteira
 
 ## Falta preencher antes de publicar
 
-1. **Formação, especializações e experiência**: em `index.html`, procure por `class="pendente"` (aparecem em amarelo na página).
-2. **Segunda foto** para a seção "Sobre": troque o bloco `sobre__quadro` por `<img src="assets/paola-2.webp">`. Hoje só existe uma foto profissional no material.
-3. **Domínio**: `<link rel="canonical">` em `index.html`.
-4. **Data** da política de privacidade.
-5. **Validar com a Paola** os temas da seção "Talvez algo disso faça sentido para você" e as respostas do FAQ (o briefing pede validação dela).
+1. **Segunda foto** para a seção "Sobre": troque o bloco `sobre__quadro` por `<img src="assets/paola-2.webp">`. Hoje só existe uma foto profissional no material.
+2. **Domínio**: `<link rel="canonical">` em `index.html`.
+3. **Data** da política de privacidade.
+4. **Validar com a Paola** os temas da seção "Talvez algo disso faça sentido para você" e as respostas do FAQ (o briefing pede validação dela).
 
 ## Contato configurado
 

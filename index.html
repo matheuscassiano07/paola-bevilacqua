@@ -20,6 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@1,300;1,400&family=Poppins:wght@300;400;500;600&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/paola.webp">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Antes da primeira pintura: liga as animações só para quem não pediu menos movimento.
+    document.documentElement.classList.add("js");
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("anima");
+  </script>
 
   <!--
     Google Tag Manager: só ative depois de definir a política de cookies/consentimento.

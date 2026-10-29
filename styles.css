@@ -294,12 +294,115 @@ p:last-child { margin-bottom: 0; }
 .flutuante:hover { background: var(--roxo-escuro); }
 @media (max-width: 520px) { .flutuante { width: 56px; padding: 0; justify-content: center; } .flutuante span { display: none; } }
 
-/* Animação discreta de entrada */
+/* ---------- Movimento ----------
+   Tudo depende da classe "anima" no <html>, que só existe quando o visitante não pediu
+   menos movimento no sistema. Sem ela (ou sem JS), a página aparece inteira e parada. */
+:root { --suave: cubic-bezier(.2, .7, .2, 1); }
+
+/* Barra fina de progresso de leitura no topo */
+.topo::after {
+  content: ""; position: absolute; left: 0; bottom: -1px; width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--roxo));
+  transform: scaleX(var(--prog, 0)); transform-origin: left; opacity: .75;
+}
+
+/* Traço antes das sobrelinhas */
+.sobrelinha::before {
+  content: ""; display: inline-block; width: 26px; height: 1px; margin-right: 12px;
+  vertical-align: middle; background: currentColor; transform-origin: left;
+}
+
+@keyframes sobe { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes aparece { from { opacity: 0; } to { opacity: 1; } }
+@keyframes revelaFoto { from { clip-path: inset(100% 0 0 0); transform: scale(1.06); } to { clip-path: inset(0); transform: none; } }
+@keyframes ceu { from { opacity: 0; transform: translate(-26px, -20px); } to { opacity: 1; transform: none; } }
+@keyframes cola { from { opacity: 0; transform: translateY(14px) rotate(-9deg); } to { opacity: 1; transform: rotate(-1.5deg); } }
+@keyframes boia { from { transform: translateY(0) scale(1); } to { transform: translateY(-18px) scale(1.04); } }
+@keyframes pop { 0% { transform: scale(.4); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes onda { from { opacity: .55; transform: scale(1); } to { opacity: 0; transform: scale(1.7); } }
+@keyframes respira { from { transform: scale(1.04); } to { transform: scale(1.12) translate(-1.5%, 1%); } }
+
+/* Topo: entrada em cascata ao carregar */
+.anima .topo { animation: aparece .8s ease both; }
+.anima .hero__nome { animation: sobe .9s var(--suave) .05s both; }
+.anima .hero__frase:not(.dividida) { animation: aparece .4s 1.4s both; } /* reserva se o JS não rodar */
+.anima .hero__frase .pal { display: inline-block; animation: sobe .9s var(--suave) both; animation-delay: calc(.2s + var(--i) * 55ms); }
+.anima .hero__lead { animation: sobe .9s var(--suave) .8s both; }
+.anima .hero__acoes { animation: sobe .9s var(--suave) .95s both; }
+.anima .hero__crp { animation: aparece 1s ease 1.15s both; }
+.anima .hero__foto img { animation: revelaFoto 1.4s var(--suave) .15s both; }
+.anima .hero__ceu { animation: ceu 1.5s var(--suave) .4s both; }
+.anima .etiqueta--foto { animation: cola .9s var(--suave) 1.2s both; }
+.anima .hero::before { animation: boia 9s ease-in-out infinite alternate; }
+
+/* Entrada ao rolar; --d é o atraso em cascata calculado no main.js */
+.anima .revela {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity .9s var(--suave), transform .9s var(--suave), filter .9s var(--suave);
+  transition-delay: var(--d, 0ms);
+}
+.anima .revela.ok { opacity: 1; transform: none; }
+.anima h2.revela { filter: blur(6px); }
+.anima h2.revela.ok { filter: none; }
+.anima .sobre__visual.revela { transform: translateX(-28px); }
+.anima .sobre__visual.revela.ok { transform: none; }
+.anima .etiqueta.revela { transform: translateY(14px) rotate(-8deg); }
+.anima .etiqueta.revela.ok { transform: rotate(-1.5deg); }
+.anima .sobrelinha.revela::before { transform: scaleX(0); transition: transform 1s var(--suave) .25s; }
+.anima .sobrelinha.revela.ok::before { transform: scaleX(1); }
+.anima .passos li.ok .passos__n { animation: pop .7s var(--suave) calc(var(--d, 0ms) + .2s) both; }
+.anima .sobre__visual.ok .sobre__quadro > img { animation: sobe 1s var(--suave) .4s both; }
+.anima .sobre__visual.ok blockquote { animation: sobe 1s var(--suave) .6s both; }
+
+/* Textura do convite final respira devagar */
+.final { position: relative; overflow: hidden; isolation: isolate; }
+.anima .final { background-image: none; } /* a textura passa para o ::before, que se move */
+.anima .final::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: url("assets/textura-teal.webp") center/cover; mix-blend-mode: soft-light; opacity: .55;
+  animation: respira 18s ease-in-out infinite alternate;
+}
+
+/* Respostas do FAQ abrem deslizando (navegadores com ::details-content) */
+html { interpolate-size: allow-keywords; }
+.faq details::details-content { block-size: 0; overflow: hidden; transition: block-size .45s var(--suave), content-visibility .45s allow-discrete; }
+.faq details[open]::details-content { block-size: auto; }
+.anima .faq details[open] p { animation: sobe .6s var(--suave) both; }
+
+/* Passar o mouse */
+.demanda { position: relative; transition: background .35s ease; }
+.demanda::before {
+  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2px;
+  background: var(--teal); transform: scaleX(0); transform-origin: left; transition: transform .55s var(--suave);
+}
+.demanda h3 { transition: transform .35s var(--suave); }
+.demanda:hover { background: #fff; }
+.demanda:hover::before { transform: scaleX(1); }
+.demanda:hover h3 { transform: translateX(4px); }
+.valores li { transition: background .35s ease, border-color .35s ease; }
+.valores li:hover { background: rgba(245, 242, 226, .08); border-color: rgba(245, 242, 226, .6); }
+.passos li { transition: border-color .35s ease, box-shadow .35s ease; }
+.passos li:hover { border-color: rgba(88, 75, 128, .35); box-shadow: 0 12px 30px -18px rgba(88, 75, 128, .45); }
+.hero__foto img { transition: filter .6s ease; }
+.hero__foto:hover img { filter: saturate(1.08) brightness(1.03); }
+.menu a { position: relative; }
+.menu a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px;
+  background: currentColor; transform: scaleX(0); transition: transform .35s var(--suave);
+}
+.menu a:hover::after { transform: scaleX(1); }
+
+/* Botão flutuante: três ondas suaves quando aparece */
+.flutuante::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  border: 2px solid var(--roxo); opacity: 0; pointer-events: none;
+}
+.anima .flutuante.ver::after { animation: onda 2.2s ease-out .6s 3; }
+
+/* Sem animação: tudo visível e parado */
 .revela { opacity: 1; }
-.js .revela { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
-.js .revela.ok { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .js .revela { opacity: 1; transform: none; transition: none; }
-  .btn, .flutuante { transition: none; }
+  .btn, .flutuante, .demanda, .demanda::before, .menu a::after { transition: none; }
+  .faq details::details-content { transition: none; }
 }

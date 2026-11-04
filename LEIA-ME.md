@@ -21,6 +21,12 @@ Site estático (HTML + CSS + JS, sem build). Para publicar, suba a pasta inteira
 - No Tag Manager, crie um acionador de evento personalizado `agendar_click` e ligue nele a conversão. Com Google Ads direto, preencha também `CONVERSAO_ADS` (`AW-.../rotulo`).
 - A personalização de anúncios fica sempre negada (área da saúde). Nunca envie dados de saúde.
 
+## Palavras-chave
+
+- Principais: psicóloga online, psicólogo online, terapia online, sessão de terapia online. Ficam no título, na descrição, no H1 e nos subtítulos.
+- Escrever "online", sem hífen: é como as pessoas buscam.
+- A abordagem continua citada como "Psicoterapia orientada pela abordagem Analítica". "Psicologia Analítica" só aparece como nome da pós-graduação em andamento.
+
 ## Ética (CFP)
 
 - Os valores das sessões não aparecem no site de propósito: o Código de Ética veda usar preço como propaganda. O FAQ direciona para o WhatsApp.

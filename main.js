@@ -10,7 +10,56 @@ const linkWhats = WHATSAPP
   ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(MENSAGEM)}`
   : "#duvidas"; // sem número configurado, o botão leva às dúvidas em vez de quebrar
 
+// Medição das campanhas. "GTM-XXXXXXX" (Tag Manager) ou "G-XXXXXXX"/"AW-XXXXXXX" (Google Tag).
+// Vazio: nada do Google carrega e o aviso de cookies não aparece.
+const TAG_ID = "";
+// Só para Google Ads sem Tag Manager: "AW-XXXXXXX/rotulo" da conversão de clique no WhatsApp.
+const CONVERSAO_ADS = "";
+
 window.dataLayer = window.dataLayer || [];
+function gtag() {
+  window.dataLayer.push(arguments);
+}
+
+const CHAVE_COOKIES = "paola-cookies";
+const lerEscolha = () => {
+  try {
+    return localStorage.getItem(CHAVE_COOKIES);
+  } catch {
+    return null;
+  }
+};
+const salvarEscolha = (valor) => {
+  try {
+    localStorage.setItem(CHAVE_COOKIES, valor);
+  } catch {
+    // sem armazenamento, a escolha vale só nesta visita
+  }
+};
+
+let tagAtiva = false;
+const carregarTag = () => {
+  if (!TAG_ID || tagAtiva) return;
+  tagAtiva = true;
+  // Área da saúde: mede visitas e conversões, mas nunca personaliza anúncios.
+  gtag("consent", "default", {
+    ad_storage: "granted",
+    analytics_storage: "granted",
+    ad_user_data: "granted",
+    ad_personalization: "denied",
+  });
+  const gtm = TAG_ID.startsWith("GTM-");
+  if (gtm) {
+    window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+  } else {
+    gtag("js", new Date());
+    gtag("config", TAG_ID);
+  }
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = `https://www.googletagmanager.com/${gtm ? "gtm.js" : "gtag/js"}?id=${encodeURIComponent(TAG_ID)}`;
+  document.head.append(s);
+};
 
 document.querySelectorAll("[data-agendar]").forEach((a) => {
   a.href = linkWhats;
@@ -20,9 +69,47 @@ document.querySelectorAll("[data-agendar]").forEach((a) => {
   }
   // Mede só qual botão foi clicado; nenhum dado pessoal ou de saúde é enviado.
   a.addEventListener("click", () => {
+    if (!tagAtiva) return;
     window.dataLayer.push({ event: "agendar_click", local_botao: a.dataset.agendar });
+    if (!TAG_ID.startsWith("GTM-")) {
+      gtag("event", "agendar_click", { local_botao: a.dataset.agendar });
+      if (CONVERSAO_ADS) gtag("event", "conversion", { send_to: CONVERSAO_ADS });
+    }
   });
 });
+
+// Aviso de cookies: aparece só com tag configurada e enquanto não houver escolha.
+const avisoCookies = document.getElementById("cookies");
+const abrirCookies = document.querySelector("[data-cookies-abrir]");
+if (TAG_ID) {
+  abrirCookies.hidden = false;
+  if (lerEscolha() === "aceito") carregarTag();
+  else if (!lerEscolha()) avisoCookies.hidden = false;
+
+  abrirCookies.addEventListener("click", () => {
+    avisoCookies.hidden = false;
+  });
+  avisoCookies.querySelectorAll("[data-cookies]").forEach((b) => {
+    b.addEventListener("click", () => {
+      const aceitouAntes = lerEscolha() === "aceito";
+      salvarEscolha(b.dataset.cookies);
+      avisoCookies.hidden = true;
+      if (b.dataset.cookies === "aceito") {
+        carregarTag();
+      } else if (aceitouAntes) {
+        // Retirou o consentimento: apaga os cookies do Google e recarrega sem a tag.
+        document.cookie.split("; ").forEach((c) => {
+          const nome = c.split("=")[0];
+          if (/^(_ga|_gcl|_gid)/.test(nome)) {
+            document.cookie = `${nome}=; Max-Age=0; path=/`;
+            document.cookie = `${nome}=; Max-Age=0; path=/; domain=.${location.hostname}`;
+          }
+        });
+        location.reload();
+      }
+    });
+  });
+}
 
 // Frase do topo entra palavra por palavra.
 const frase = document.querySelector(".hero__frase");
@@ -43,8 +130,7 @@ if (anima && frase) {
 const alvos = [
   ".sec__cab > *", ".sobre__txt > p", ".sobre__txt > h2", ".credenciais > div",
   ".modal__txt > *", ".praticas li", ".faq__cab > *", ".faq details",
-  ".final__in > *", ".demandas > li", ".valores > li", ".passos > li", ".abord__cols > div",
-  ".valores__titulo", ".rodape__grid > div",
+  ".final__in > *", ".passos > li", ".abord__cols > div", ".rodape__grid > div",
 ];
 document.querySelectorAll(alvos.join(",")).forEach((el) => el.classList.add("revela"));
 document.querySelectorAll(".revela").forEach((el) => {

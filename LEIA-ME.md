@@ -5,9 +5,9 @@ Site estático (HTML + CSS + JS, sem build). Para publicar, suba a pasta inteira
 ## Falta preencher antes de publicar
 
 1. **Segunda foto** para a seção "Sobre": troque o bloco `sobre__quadro` por `<img src="assets/paola-2.webp">`. Hoje só existe uma foto profissional no material.
-2. **Domínio**: `<link rel="canonical">` em `index.html`.
-3. **Data** da política de privacidade.
-4. **Validar com a Paola** os temas da seção "Talvez algo disso faça sentido para você" e as respostas do FAQ (o briefing pede validação dela).
+2. **ID da tag das campanhas**: `TAG_ID` em `main.js`. Sem ele, nada do Google carrega e o aviso de cookies não aparece.
+3. **Domínio próprio**: hoje canonical e og apontam para `paola-bevilacqua.vercel.app`. Ao trocar, atualizar `canonical`, `og:url` e `og:image` em `index.html`.
+4. **Validar com a Paola** as respostas do FAQ (o briefing pede validação dela).
 
 ## Contato configurado
 
@@ -17,7 +17,9 @@ Site estático (HTML + CSS + JS, sem build). Para publicar, suba a pasta inteira
 ## Medição
 
 - Todo botão de agendamento envia `agendar_click` com `local_botao` (topo, hero, modalidades, agendamento, cta-final, rodape, flutuante) para o `dataLayer`.
-- O Google Tag Manager está comentado no `<head>`. Só ative junto com um aviso de cookies, e nunca envie dados de saúde.
+- `TAG_ID` em `main.js` aceita `GTM-...` (Tag Manager) ou `G-...`/`AW-...` (Google Tag). Só carrega depois de o visitante aceitar os cookies.
+- No Tag Manager, crie um acionador de evento personalizado `agendar_click` e ligue nele a conversão. Com Google Ads direto, preencha também `CONVERSAO_ADS` (`AW-.../rotulo`).
+- A personalização de anúncios fica sempre negada (área da saúde). Nunca envie dados de saúde.
 
 ## Ética (CFP)
 
